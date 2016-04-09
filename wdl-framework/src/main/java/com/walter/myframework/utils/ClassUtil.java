@@ -14,6 +14,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * 类加载器相关.
+ *
  * Created by wangdongliang on 16/4/7.
  */
 public final class ClassUtil {
@@ -80,15 +82,10 @@ public final class ClassUtil {
                     }
                 }
             }
-
-
-
-
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-
 
         return classSet;
     }

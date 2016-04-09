@@ -1,5 +1,8 @@
 package com.walter.myopensource.web.servlet;
 
+import com.walter.myframework.annotation.Inject;
+import com.walter.myopensource.web.service.CustomerService;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,6 +16,10 @@ import java.io.IOException;
 
 @WebServlet("/customer_create")
 public class CustomerServlet extends HttpServlet {
+
+    @Inject
+    private CustomerService customerService;
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //TODO

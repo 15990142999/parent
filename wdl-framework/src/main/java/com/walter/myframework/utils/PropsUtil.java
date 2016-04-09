@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
+ *
+ * 资源文件读取.
  * Created by wangdongliang on 16/4/7.
  */
 public final class PropsUtil {

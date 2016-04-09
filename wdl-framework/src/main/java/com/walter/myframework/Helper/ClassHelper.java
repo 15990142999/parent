@@ -1,6 +1,5 @@
 package com.walter.myframework.Helper;
 
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import com.walter.myframework.annotation.Controller;
 import com.walter.myframework.annotation.Service;
 import com.walter.myframework.utils.ClassUtil;
@@ -10,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 获取Controller, Service, Action,Inject
+ *
  * Created by wangdongliang on 16/4/7.
  */
 public final class ClassHelper {
