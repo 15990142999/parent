@@ -4,8 +4,9 @@ import com.walter.myframework.Helper.BeanHelper;
 import com.walter.myframework.Helper.ControllerHelper;
 import com.walter.myframework.HelperLoader;
 import com.walter.myframework.controller.Handler;
-import com.walter.myframework.utils.ClassUtil;
-import com.walter.myframework.utils.ConfigHelper;
+import com.walter.myframework.utils.*;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,8 +64,51 @@ public class DispatchServlet extends HttpServlet{
                 paramMap.put(paramName, paramValue);
             }
 
-            String body =  ""; //TODO
+            String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
+            String[] params = StringUtils.split(body, "&");
+            for (String param : params){
+                String []array = StringUtils.split(param, "=");
 
+                String paramName = array[0];
+                String paramValue = array[1];
+
+                paramMap.put(paramName, paramValue);
+            }
+
+            Param param = new Param(paramMap);
+
+            //call action method
+            Method actionMethod = handler.getActionMethod();
+            Object result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+
+            if (result instanceof View){
+
+                View view = (View) result;
+                String path = view.getPath();
+
+                if (path.startsWith("/")){
+                    resp.sendRedirect(req.getContextPath() + path);
+                }else {
+                    Map<String, Object> model = view.getModel();
+                    for (Map.Entry<String, Object> entry : model.entrySet()){
+                        req.setAttribute(entry.getKey(), entry.getValue());
+                    }
+                    req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req,resp);
+                }
+            }else if (result instanceof Data){
+                //return json data
+                Data data = (Data) result;
+                Object model = data.getModel();
+                if (model!= null){
+                    resp.setContentType("application/json");
+                    resp.setCharacterEncoding("UTF-8");
+                    PrintWriter printWriter = resp.getWriter();
+                    String json = JsonUtil.toJson(model);
+                    printWriter.write(json);
+                    printWriter.flush();
+                    printWriter.close();
+                }
+            }
         }
     }
 }
